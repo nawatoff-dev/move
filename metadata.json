@@ -1,0 +1,7 @@
+{
+  "name": "app",
+  "description": "A professional journaling and checklist tool for Forex traders.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}

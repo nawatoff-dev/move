@@ -1,8 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Download, Monitor, Smartphone, ShieldCheck, Zap, ArrowRight } from 'lucide-react';
+import { Download, Monitor, Smartphone, ShieldCheck, Zap, ArrowRight, AlertTriangle, Plus } from 'lucide-react';
 
 export const Downloads: React.FC = () => {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+    }
+  };
+
   const downloadOptions = [
     {
       id: 'windows',
@@ -43,6 +68,46 @@ export const Downloads: React.FC = () => {
         <p className="text-text-muted max-w-xl mx-auto font-medium">
           Install zZIA on your devices for better performance, offline access, and a more integrated trading experience.
         </p>
+      </div>
+
+      {/* PWA Install Section */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="mb-12 p-10 bg-gradient-to-br from-brand-primary/20 to-cyan-500/20 border border-brand-primary/30 rounded-[3rem] flex flex-col md:flex-row items-center justify-between gap-8 group hover:shadow-2xl hover:shadow-brand-primary/10 transition-all"
+      >
+        <div className="flex items-center gap-6">
+          <div className="w-20 h-20 bg-brand-primary rounded-[2rem] flex items-center justify-center shadow-lg shadow-brand-primary/20 group-hover:scale-110 transition-transform">
+            <Plus className="text-text-inverse" size={40} />
+          </div>
+          <div>
+            <h2 className="text-3xl font-black uppercase tracking-tight mb-2">Install as App</h2>
+            <p className="text-text-muted font-medium max-w-md">Pin zZIA to your taskbar or home screen for instant access and full offline support.</p>
+          </div>
+        </div>
+        <button 
+          onClick={handleInstallClick}
+          disabled={!isInstallable}
+          className={`px-10 py-5 font-black text-sm uppercase tracking-widest rounded-2xl transition-all shadow-xl flex items-center gap-3 ${
+            isInstallable 
+              ? "bg-brand-primary text-text-inverse hover:scale-105 shadow-brand-primary/20" 
+              : "bg-brand-surface text-text-muted border border-brand-border cursor-not-allowed"
+          }`}
+        >
+          {isInstallable ? "Install Now" : "Already Installed"}
+          <ArrowRight size={18} />
+        </button>
+      </motion.div>
+
+      {/* Warning Section */}
+      <div className="mb-12 p-6 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-4">
+        <AlertTriangle className="text-amber-500 shrink-0 mt-1" size={20} />
+        <div className="text-sm">
+          <p className="text-amber-500 font-bold uppercase tracking-widest mb-1">Security Warning Notice</p>
+          <p className="text-text-muted leading-relaxed">
+            The .exe and .apk files below are currently <strong>placeholders</strong>. Windows and Android will flag them as "unrecognized" or "unsafe" because they are not yet signed with a developer certificate. For the best experience, we recommend using the <strong>"Install as App"</strong> button above.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
@@ -97,9 +162,9 @@ export const Downloads: React.FC = () => {
             <ShieldCheck className="text-brand-primary" size={32} />
           </div>
         </div>
-        <h3 className="text-xl font-black uppercase tracking-tight mb-4">PWA Installation</h3>
+        <h3 className="text-xl font-black uppercase tracking-tight mb-4">PWA Technology</h3>
         <p className="text-text-muted text-sm max-w-lg mx-auto leading-relaxed mb-8">
-          You can also install zZIA directly from your browser as a Progressive Web App. Look for the "Install" icon in your browser's address bar or menu.
+          zZIA uses Progressive Web App technology. This means it can be installed on any device without going through an app store, while maintaining full functionality and security.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <div className="px-4 py-2 bg-brand-surface border border-brand-border rounded-xl text-[10px] font-black uppercase tracking-widest text-text-muted">

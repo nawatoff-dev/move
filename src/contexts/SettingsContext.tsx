@@ -48,8 +48,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       root.style.setProperty('--brand-dark', '#f8fafc');
       root.style.setProperty('--brand-surface', '#ffffff');
       root.style.setProperty('--brand-border', '#e2e8f0');
-      root.style.setProperty('--text-main', '#0f172a');
-      root.style.setProperty('--text-muted', '#64748b');
+      root.style.setProperty('--text-main', '#000000');
+      root.style.setProperty('--text-muted', '#475569');
       root.style.setProperty('--text-inverse', '#ffffff');
     } else if (s.theme === 'modern') {
       root.classList.remove('light');

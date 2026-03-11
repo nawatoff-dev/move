@@ -147,7 +147,7 @@ export const Checklist: React.FC<ChecklistProps> = ({
     <div className="max-w-6xl mx-auto py-4 px-4">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black tracking-tight">TRADING <span className="text-brand-primary">CHECKLIST</span></h1>
+          <h1 className="text-2xl font-black tracking-tight text-text-main">TRADING <span className="text-brand-primary">CHECKLIST</span></h1>
           <p className="text-text-muted text-sm">Verify edge • Manage risk • Execute</p>
         </div>
         <div className="flex gap-2">

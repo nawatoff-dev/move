@@ -550,7 +550,7 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
         {reports.length === 0 ? (
           <div className="text-center py-20 bg-brand-surface/30 rounded-3xl border border-dashed border-brand-border">
             <BarChart3 size={48} className="mx-auto mb-4 text-text-muted/20" />
-            <h3 className="text-lg font-black text-text-muted uppercase">No active reports</h3>
+            <h3 className="text-lg font-black text-text-main uppercase">No active reports</h3>
             <p className="text-text-muted/60 text-sm">Add your first analysis to see it here.</p>
           </div>
         ) : (
@@ -585,7 +585,7 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
                     )}
                   </div>
                   <div>
-                    <h3 className="text-xl font-black tracking-tight text-text-main">{report.pair}</h3>
+                    <h3 className="text-xl font-black tracking-tight text-text-main uppercase">{report.pair}</h3>
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
                       <Clock size={12} />
                       {getTimeRemaining(report.createdAt)}

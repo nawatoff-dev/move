@@ -140,7 +140,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
             <Download className="text-text-inverse" size={32} />
           </div>
           <div>
-            <h2 className="text-2xl font-black uppercase tracking-tight mb-1">Download zZIA</h2>
+            <h2 className="text-2xl font-black uppercase tracking-tight mb-1 text-text-main">Download zZIA</h2>
             <p className="text-text-muted font-medium">Get the Windows or Android installer for a better experience.</p>
           </div>
         </div>
@@ -158,7 +158,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
         <div className="absolute top-0 right-0 w-96 h-96 bg-brand-primary/5 blur-[120px] -mr-48 -mt-48 transition-all group-hover:bg-brand-primary/10" />
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-black uppercase flex items-center gap-3">
+            <h2 className="text-2xl font-black uppercase flex items-center gap-3 text-text-main">
               <ShieldCheck className="text-brand-primary" />
               Your Trading Guide
             </h2>

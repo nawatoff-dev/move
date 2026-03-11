@@ -29,9 +29,48 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
   const [images, setImages] = useState<string[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   
   const recognitionRef = useRef<any>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
+  const zoomContainerRef = useRef<HTMLDivElement>(null);
+
+  // Zoom logic
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!zoomedImage) return;
+    e.preventDefault();
+    const delta = e.deltaY * -0.001;
+    const newScale = Math.min(Math.max(0.5, scale + delta), 5);
+    setScale(newScale);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (scale <= 1) return;
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    setPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const resetZoom = () => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+    setZoomedImage(null);
+  };
 
   // Voice Input Logic
   const toggleRecording = () => {
@@ -81,8 +120,8 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
   // Handle Paste (Ctrl+V and requested Ctrl+A)
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'a')) {
-        if (e.key === 'a' && isAdding) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        if (isAdding) {
           e.preventDefault();
         }
         
@@ -320,7 +359,7 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
     <div className="max-w-5xl mx-auto py-4 px-4" onPaste={handlePaste}>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-black tracking-tight uppercase">Analysis <span className="text-brand-primary">Reports</span></h1>
+          <h1 className="text-2xl font-black tracking-tight uppercase text-text-main">Analysis <span className="text-brand-primary">Reports</span></h1>
           <p className="text-text-muted text-sm">Document your chart analysis • Resets every 24h</p>
         </div>
         <div className="flex items-center gap-4">
@@ -362,7 +401,7 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
             className="glass-card p-8 mb-12 border-brand-primary/30"
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-black uppercase tracking-tight">{editingId ? 'Edit Analysis Report' : 'New Analysis Report'}</h2>
+              <h2 className="text-lg font-black uppercase tracking-tight text-text-main">{editingId ? 'Edit Analysis Report' : 'New Analysis Report'}</h2>
               <button onClick={() => { setIsAdding(false); setEditingId(null); }} className="text-text-muted hover:text-white">
                 <X size={24} />
               </button>
@@ -546,7 +585,7 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
                     )}
                   </div>
                   <div>
-                    <h3 className="text-xl font-black tracking-tight">{report.pair}</h3>
+                    <h3 className="text-xl font-black tracking-tight text-text-main">{report.pair}</h3>
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-muted">
                       <Clock size={12} />
                       {getTimeRemaining(report.createdAt)}
@@ -608,8 +647,15 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
                 {report.images && report.images.length > 0 && (
                   <div className="flex flex-col gap-4">
                     {report.images.map((img, idx) => (
-                      <div key={idx} className="rounded-xl overflow-hidden border border-brand-border bg-black/20">
-                        <img src={img} alt={`Analysis ${idx + 1}`} className="w-full h-auto max-h-[600px] object-contain" />
+                      <div 
+                        key={idx} 
+                        className="rounded-xl overflow-hidden border border-brand-border bg-black/20 cursor-zoom-in group relative"
+                        onClick={() => setZoomedImage(img)}
+                      >
+                        <img src={img} alt={`Analysis ${idx + 1}`} className="w-full h-auto max-h-[600px] object-contain transition-transform duration-300 group-hover:scale-[1.02]" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                          <Plus className="text-white opacity-0 group-hover:opacity-100 transition-opacity" size={32} />
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -619,6 +665,72 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
           ))
         )}
       </div>
+
+      {/* Image Zoom Modal */}
+      <AnimatePresence>
+        {zoomedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 md:p-12 cursor-default"
+            onClick={resetZoom}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full h-full flex items-center justify-center overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={resetZoom}
+                className="absolute top-4 right-4 z-[110] p-3 bg-brand-surface/50 text-white rounded-full hover:bg-brand-surface transition-all border border-brand-border"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[110] px-6 py-3 bg-brand-surface/80 backdrop-blur-md border border-brand-border rounded-2xl flex items-center gap-6 text-text-muted">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest">Zoom:</span>
+                  <span className="text-sm font-black text-brand-primary">{Math.round(scale * 100)}%</span>
+                </div>
+                <div className="w-px h-4 bg-brand-border" />
+                <p className="text-[10px] font-bold uppercase tracking-widest">Scroll to zoom • Drag to pan</p>
+                <button 
+                  onClick={() => { setScale(1); setPosition({ x: 0, y: 0 }); }}
+                  className="px-3 py-1 bg-brand-primary/10 text-brand-primary border border-brand-primary/20 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-brand-primary hover:text-text-inverse transition-all"
+                >
+                  Reset
+                </button>
+              </div>
+
+              <div 
+                ref={zoomContainerRef}
+                className="w-full h-full flex items-center justify-center touch-none"
+                onWheel={handleWheel}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+              >
+                <motion.img
+                  src={zoomedImage}
+                  alt="Zoomed analysis"
+                  className="max-w-full max-h-full object-contain pointer-events-none select-none"
+                  style={{
+                    scale,
+                    x: position.x,
+                    y: position.y,
+                    cursor: scale > 1 ? 'grab' : 'default'
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hidden PDF Template */}
       <div className="fixed -left-[9999px] top-0">

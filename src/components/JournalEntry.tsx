@@ -11,9 +11,10 @@ interface JournalEntryProps {
     sub: string;
     color: string;
   } | null;
+  checkedItems: string[];
 }
 
-export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus }) => {
+export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus, checkedItems }) => {
   const [pair, setPair] = useState('');
   const [winRate, setWinRate] = useState('');
   const [reason, setReason] = useState('');
@@ -267,7 +268,7 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus }) => {
     <div className="max-w-4xl mx-auto py-4 px-4" onPaste={handlePaste}>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-black tracking-tight">TRADE <span className="text-brand-primary">JOURNALING</span></h1>
+          <h1 className="text-2xl font-black tracking-tight text-text-main">TRADE <span className="text-brand-primary">JOURNALING</span></h1>
           <p className="text-text-muted text-sm">Document your process • Learn from every trade</p>
         </div>
         <div className="flex items-center gap-4">
@@ -386,6 +387,22 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus }) => {
           />
         </div>
 
+        {/* Checklist */}
+        <div className="glass-card p-6">
+          <label className="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-4">Checklist</label>
+          {checkedItems.length === 0 ? (
+            <p className="text-text-muted text-xs italic">No items checked in the checklist.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {checkedItems.map((item, idx) => (
+                <div key={idx} className="px-3 py-1.5 bg-brand-primary/10 border border-brand-primary/20 rounded-lg text-[10px] font-bold text-brand-primary uppercase tracking-wider">
+                  {item}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Images */}
         <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
@@ -479,6 +496,21 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus }) => {
               <p className="leading-relaxed whitespace-pre-wrap text-zinc-700 text-sm">
                 {confluence || 'No confluence noted.'}
               </p>
+            </section>
+            
+            <section className="pdf-section bg-white">
+              <h3 className="text-zinc-900 font-black text-xs uppercase tracking-[0.2em] mb-4 border-l-4 border-zinc-900 pl-4">Checklist</h3>
+              <div className="flex flex-wrap gap-2">
+                {checkedItems.length === 0 ? (
+                  <p className="text-zinc-500 text-xs italic">No items checked.</p>
+                ) : (
+                  checkedItems.map((item, idx) => (
+                    <div key={idx} className="px-3 py-1 bg-zinc-100 border border-zinc-200 rounded text-[9px] font-black text-zinc-800 uppercase tracking-wider">
+                      {item}
+                    </div>
+                  ))
+                )}
+              </div>
             </section>
 
             {/* Images Section */}

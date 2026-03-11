@@ -62,7 +62,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ setActiveTab }) => {
               <LayoutDashboard className="text-brand-primary" size={40} />
             </div>
             <div>
-              <h1 className="text-4xl font-black tracking-tight uppercase leading-none mb-2">Trading <span className="text-brand-primary">Dashboard</span></h1>
+              <h1 className="text-4xl font-black tracking-tight uppercase leading-none mb-2 text-text-main">Trading <span className="text-brand-primary">Dashboard</span></h1>
               <p className="text-text-muted font-medium flex items-center gap-2">
                 <Zap size={14} className="text-brand-primary" />
                 Welcome back. Follow your process and stay disciplined.

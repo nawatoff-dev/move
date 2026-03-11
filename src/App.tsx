@@ -457,7 +457,10 @@ export default function App() {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <JournalEntry setupStatus={setupStatus} />
+                    <JournalEntry 
+                      setupStatus={setupStatus} 
+                      checkedItems={checklist.flatMap(s => s.items.filter(i => i.checked).map(i => i.label))}
+                    />
                   </motion.div>
                 ) : activeTab === 'analysis' ? (
                   <motion.div

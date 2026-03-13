@@ -18,6 +18,8 @@ interface JournalEntryProps {
 export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus, checkedItems }) => {
   const [pair, setPair] = useState('');
   const [winRate, setWinRate] = useState('');
+  const [riskPercent, setRiskPercent] = useState('');
+  const [riskAmount, setRiskAmount] = useState('');
   const [reason, setReason] = useState('');
   const [psychology, setPsychology] = useState('');
   const [confluence, setConfluence] = useState('');
@@ -264,6 +266,8 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus, checked
     
     setPair('');
     setWinRate('');
+    setRiskPercent('');
+    setRiskAmount('');
     setReason('');
     setPsychology('');
     setConfluence('');
@@ -322,6 +326,30 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus, checked
             value={winRate}
             onChange={(e) => setWinRate(e.target.value)}
             placeholder="e.g. 75%"
+            className="w-full bg-brand-surface/50 border border-brand-border rounded-xl px-4 py-3 text-lg font-black tracking-tight focus:outline-none focus:border-brand-primary/50 transition-all text-text-main"
+          />
+        </div>
+
+        {/* Risk Percent */}
+        <div className="glass-card p-6">
+          <label className="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Risk (%)</label>
+          <input 
+            type="text"
+            value={riskPercent}
+            onChange={(e) => setRiskPercent(e.target.value)}
+            placeholder="e.g. 1%"
+            className="w-full bg-brand-surface/50 border border-brand-border rounded-xl px-4 py-3 text-lg font-black tracking-tight focus:outline-none focus:border-brand-primary/50 transition-all text-text-main"
+          />
+        </div>
+
+        {/* Risk Amount */}
+        <div className="glass-card p-6">
+          <label className="block text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Risk Amount</label>
+          <input 
+            type="text"
+            value={riskAmount}
+            onChange={(e) => setRiskAmount(e.target.value)}
+            placeholder="e.g. $100"
             className="w-full bg-brand-surface/50 border border-brand-border rounded-xl px-4 py-3 text-lg font-black tracking-tight focus:outline-none focus:border-brand-primary/50 transition-all text-text-main"
           />
         </div>
@@ -459,6 +487,8 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus, checked
               <span>PAIR: {pair || 'N/A'}</span>
               <span>|</span>
               <span>WR: {winRate || '0%'}</span>
+              <span>|</span>
+              <span>RISK: {riskPercent || '0%'} ({riskAmount || '0'})</span>
               <span>|</span>
               <span>DATE: {new Date().toLocaleString()}</span>
             </div>

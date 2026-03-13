@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { TradeEntry, cn } from '../types';
 import jsPDF from 'jspdf';
 import { toCanvas } from 'html-to-image';
+import { savePdf } from '../services/fileService';
 
 interface JournalCalendarProps {
   trades: TradeEntry[];
@@ -68,6 +69,7 @@ export const JournalCalendar: React.FC<JournalCalendarProps> = ({ trades, onAddT
     let yOffset = margin;
 
     const addSectionToPdf = async (element: HTMLElement) => {
+      if (!element) return;
       const canvas = await toCanvas(element, {
         backgroundColor: '#ffffff',
         width: 800,
@@ -162,12 +164,15 @@ export const JournalCalendar: React.FC<JournalCalendarProps> = ({ trades, onAddT
 
     for (const html of sections) {
       reportContainer.innerHTML = html;
-      const element = reportContainer.firstChild as HTMLElement;
+      const element = reportContainer.firstElementChild as HTMLElement;
       await addSectionToPdf(element);
     }
 
     document.body.removeChild(reportContainer);
-    pdf.save(`zZIA-Journal-${format(currentMonth, 'yyyy-MM')}.pdf`);
+    const blob = pdf.output('blob');
+    const dateStr = new Date().toISOString().split('T')[0];
+    const fileName = `Performance_Report_${dateStr}.pdf`;
+    await savePdf(blob, fileName, 'performance');
   };
 ;
 

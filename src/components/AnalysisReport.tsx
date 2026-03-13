@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Mic, MicOff, Image as ImageIcon, Trash2, FileDown, Plus, X, RotateCcw, TrendingUp, TrendingDown, AlertTriangle, Clock, BarChart3, Target, Edit2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
+import { savePdf } from '../services/fileService';
 import { cn, AnalysisReport as AnalysisReportType } from '../types';
 
 interface AnalysisReportProps {
@@ -258,6 +259,7 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
         let yOffset = 0;
 
         const addSectionToPdf = async (element: HTMLElement) => {
+          if (!element) return;
           const canvas = await toCanvas(element, {
             width: 1200, // Higher resolution
             style: { transform: 'scale(1)', left: '0', top: '0' }
@@ -287,11 +289,11 @@ export const AnalysisReport: React.FC<AnalysisReportProps> = ({
           await addSectionToPdf(sections[i] as HTMLElement);
         }
 
-        const fileName = toExport.length === 1 
-          ? `Analysis-${toExport[0].pair}-${new Date().toISOString().split('T')[0]}.pdf`
-          : `Analysis-Reports-${new Date().toISOString().split('T')[0]}.pdf`;
+        const dateStr = new Date().toISOString().split('T')[0];
+        const fileName = `Analysis_Report_${dateStr}.pdf`;
         
-        pdf.save(fileName);
+        const blob = pdf.output('blob');
+        await savePdf(blob, fileName, 'analysis');
       } catch (err) {
         console.error('PDF Export Error:', err);
         alert('Failed to export PDF. Please try again.');

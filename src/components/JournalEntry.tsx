@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Mic, MicOff, Image as ImageIcon, Trash2, FileDown, Plus, X, RotateCcw } from 'lucide-react';
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
+import { savePdf } from '../services/fileService';
 import { cn } from '../types';
 
 interface JournalEntryProps {
@@ -177,6 +178,7 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus, checked
     let yOffset = 0;
 
     const addSectionToPdf = async (element: HTMLElement, isFirst: boolean) => {
+      if (!element) return;
       const canvas = await toCanvas(element, {
         width: 800,
         style: { transform: 'scale(1)', left: '0', top: '0' }
@@ -243,7 +245,12 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({ setupStatus, checked
       await addSectionToPdf(sections[i] as HTMLElement, i === 0);
     }
 
-    pdf.save(`Journal-${pair || 'Trade'}-${new Date().toISOString().split('T')[0]}.pdf`);
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
+    const timeStr = now.getHours().toString().padStart(2, '0') + '-' + now.getMinutes().toString().padStart(2, '0');
+    const fileName = `Journal_${dateStr}_${timeStr}.pdf`;
+    const blob = pdf.output('blob');
+    await savePdf(blob, fileName, 'journal');
   };
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Sun, Moon, Sparkles, RotateCcw, Trash2, Plus, Minus, Type } from 'lucide-react';
 import { useSettings } from '../contexts/SettingsContext';
+import { ExportStorageSettings } from './ExportStorageSettings';
 
 const COLORS = [
   { name: 'Emerald', hex: '#10b981' },
@@ -162,6 +163,8 @@ export const Settings: React.FC = () => {
           </div>
         </section>
       </div>
+
+      <ExportStorageSettings />
 
       <div className="glass-card p-8 text-center space-y-4">
         <h2 className="text-xl font-black text-text-main" style={{ fontFamily: settings.fontStyle }}>

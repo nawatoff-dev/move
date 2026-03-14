@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getBaseDirectory, setBaseDirectory, resetBaseDirectory } from '../services/fileService';
 
 export type Theme = 'light' | 'dark' | 'modern';
 
@@ -21,6 +22,9 @@ interface SettingsContextType {
   updateSettings: (newSettings: Partial<Settings>) => void;
   resetSettings: () => void;
   restorePreviousSettings: () => void;
+  exportStorageHandle: FileSystemDirectoryHandle | null;
+  setExportStorage: () => Promise<void>;
+  resetExportStorage: () => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -32,6 +36,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
 
   const [previousSettings, setPreviousSettings] = useState<Settings | null>(null);
+  const [exportStorageHandle, setExportStorageHandle] = useState<FileSystemDirectoryHandle | null>(null);
+
+  useEffect(() => {
+    getBaseDirectory().then(setExportStorageHandle);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('zzia_settings', JSON.stringify(settings));
@@ -99,8 +108,26 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const setExportStorage = async () => {
+    const handle = await setBaseDirectory();
+    if (handle) setExportStorageHandle(handle);
+  };
+
+  const resetExportStorage = async () => {
+    await resetBaseDirectory();
+    setExportStorageHandle(null);
+  };
+
   return (
-    <SettingsContext.Provider value={{ settings, updateSettings, resetSettings, restorePreviousSettings }}>
+    <SettingsContext.Provider value={{ 
+      settings, 
+      updateSettings, 
+      resetSettings, 
+      restorePreviousSettings,
+      exportStorageHandle,
+      setExportStorage,
+      resetExportStorage
+    }}>
       {children}
     </SettingsContext.Provider>
   );
